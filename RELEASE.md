@@ -68,7 +68,13 @@
     `beam_pipeline_args` is provided.
 *   Changed schema as an optional input channel of Trainer as schema can be
     accessed from TFT graph too.
-
+*   Added a new template, 'penguin' which is simple subset of
+    [penguin examples](https://github.com/tensorflow/tfx/tree/master/tfx/examples/penguin),
+    and uses the same
+    [Palmer Penguins](https://allisonhorst.github.io/palmerpenguins/articles/intro.html)
+    dataset. The new template focused on easy ingestion of user's own data.
+*   Changed default data path for the taxi template from `tfx-template/data`
+    to `tfx-template/data/taxi`.
 ### For pipeline authors
 
 ### For component authors
