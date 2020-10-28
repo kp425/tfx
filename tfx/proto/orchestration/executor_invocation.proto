@@ -43,6 +43,10 @@ message ExecutorInvocation {
 
   // Stateful working dir will be deterministic given pipeline, node and run_id.
   // The typical usecase is to restore long running executor's state after
-  // eviction.
+  // eviction. This dir is clean up only when the execution succeeded.
   string stateful_working_dir = 7;
+
+  // A temporary dir for executions and it is expected to be cleared up at the
+  // end of executions in both success and failure cases.
+  string tmp_dir = 8;
 }
