@@ -1,6 +1,7 @@
 ### TFX OSS roadmap
-This highlights the main OSS efforts for the TFX team in 2019 and H2 2020. If
-you're interested in contributing in one of these areas,
+This highlights the main OSS efforts for the TFX team in Q4 2020 and Q1 2021,
+along with the history from 2019 onwards. If you're interested in contributing
+in one of these areas,
 [contributions](https://github.com/tensorflow/tfx/blob/master/CONTRIBUTING.md)
 are always welcome, especially in areas that extend TFX into infrastructure
 currently not widely in use at Google.
@@ -11,37 +12,33 @@ currently not widely in use at Google.
     clouds, on premises, and in heterogeneous computing environments.
 
 #### _Goals_
-*   Help enterprises realize large-scale production ML capabilities similar to
-what we have available at Google.  We recognize that every enterprise has unique
-infrastructure challenges, and we want TFX to be open and adaptable to those
-challenges.
-*   Stimulate innovation: Machine learning is a rapid, innovative field and we
-want TFX to help researchers and engineers both realize and contribute to that
-innovation.  Likewise, we want TFX to be interoperable with other ML efforts in
-the open source community.
-*   Usability: We want the experience to deploy a model in production to be as
-frictionless as possible throughout the entire journey -- from the initial
-efforts building a model to the final touches of deploying in production.
+*   **Help the community:** Help enterprises realize large-scale production ML
+capabilities similar to what we have available at Google.  We recognize that
+every enterprise has unique infrastructure challenges, and we want TFX to be
+open and adaptable to those challenges.
+*   **Stimulate innovation:** Machine learning is a rapid, innovative field and
+we want TFX to help researchers and engineers both realize and contribute to
+that innovation.  Likewise, we want TFX to be interoperable with other ML
+efforts in the open source community.
+*   **Usability:** We want the experience of deploying a model in production to
+be as frictionless as possible throughout the entire journey -- from the initial
+efforts of building a model to the final touches of deploying in production.
 
 #### _Specific efforts underway_
 
 ##### Extensibility
-*   Encourage the discovery and reuse of external contributions.
 *   Participate in and extend support for other OSS efforts, initially:
 [Apache Beam](https://beam.apache.org/),
 [ML Metadata](https://www.tensorflow.org/tfx/guide/mlmd),
-[Tensorboard](https://www.tensorflow.org/guide/summaries_and_tensorboard), and
+[Tensorboard](https://www.tensorflow.org/tfx/guide/mlmd),
+[Kubeflow](https://www.kubeflow.org/), and
 [TensorFlow 2.0](https://www.tensorflow.org/versions/r2.0/api_docs/).
 *   Make TFX more ML framework neutral to enable wider usage.
-*   Extend portability across additional cluster computing frameworks and data
-representations.
-
-##### Performance
-*   Better distributed training support
-([DistributionStrategy](https://www.tensorflow.org/guide/distribute_strategy)).
-*   Support for more performant file storage formats than TFRecords.
-*   Better telemetry for users to understand the behavior of components in a
-TFX pipeline.
+*   Encourage the discovery and reuse of external contributions.
+*   Extend portability across additional cluster computing frameworks (e.g.
+[Kubernetes](https://kubernetes.io/), [Apache Flink](https://flink.apache.org/)
+and data formats (e.g. [Apache Avro](https://avro.apache.org/),
+[Apache Parquet](https://parquet.apache.org/)).
 
 ##### Usability
 *   Support more distributed strategies in TensorFlow 2.x.
@@ -54,13 +51,20 @@ TFX pipeline.
     orchestration semantics.
 *   Create examples and templates for more ML verticals.
 
+##### Performance
+*   Better distributed training support
+([DistributionStrategy](https://www.tensorflow.org/guide/distribute_strategy)).
+*   Support for more performant file storage formats than TFRecords.
+*   Better telemetry for users to understand the behavior of components in a
+TFX pipeline.
+
 ##### Education
 *   Work with [ML Metadata](https://www.tensorflow.org/tfx/guide/mlmd) to
-    publish standard ontology types and show case them through TFX.
+    publish standard ontology types and showcase them through TFX.
 
 ##### Innovation and collaboration
-*   Further enhance integration with tf.Lite to better support mobile and edge
-devices.
+*   Further enhance integration with [tf.Lite](https://www.tensorflow.org/lite/)
+to better support mobile, IoT, and edge devices.
 *   Formalize Special Interest Groups (SIGs) for specific aspects of TFX to
 accelerate community innovation and collaboration.
 *   Early access to new features.
