@@ -13,8 +13,9 @@
 # limitations under the License.
 """Utilities to evaluate and resolve Placeholders."""
 
+import base64
 import re
-from typing import Any, Callable, Dict
+from typing import cast, Any, Callable, Dict
 
 import attr
 from tfx.dsl.placeholder import placeholder as ph
@@ -109,7 +110,9 @@ class _ExpressionResolver:
                 context.exec_info.pipeline_node.node_info,
             ph.RuntimeInfoKey.PIPELINE_INFO.value:
                 context.exec_info.pipeline_info,
-        }
+        },
+        placeholder_pb2.Placeholder.Type.EXECUTION_INVOCATION:
+            context.exec_info
     }
 
   def resolve(self, expression: placeholder_pb2.PlaceholderExpression) -> Any:
@@ -132,6 +135,19 @@ class _ExpressionResolver:
     except KeyError as e:
       raise KeyError(
           f"Unsupported placeholder type: {placeholder.type}.") from e
+
+    # Handle the special case of EXECUTION_INVOCATION placeholders, which don't
+    # take a key.
+    if (placeholder.type ==
+        placeholder_pb2.Placeholder.Type.EXECUTION_INVOCATION):
+      execution_info = cast(base_executor_operator.ExecutionInfo, context)
+      exec_invocation_pb = execution_info.to_executor_invocation()
+      # TODO(b/170469176): Update this to use the proto encoding Operator
+      # instead of hard-coding the encoding.
+      return base64.b64encode(
+          exec_invocation_pb.SerializeToString()).decode("ascii")
+
+    # Handle remaining placeholder types.
     try:
       return context[placeholder.key]
     except KeyError as e:

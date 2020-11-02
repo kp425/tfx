@@ -124,6 +124,7 @@ message Placeholder {
     OUTPUT_ARTIFACT = 1;
     EXEC_PROPERTY = 2;
     RUNTIME_INFO = 3;
+    EXECUTION_INVOCATION = 4;
   }
   // Required. Type of the placeholder.
   Type type = 1;
