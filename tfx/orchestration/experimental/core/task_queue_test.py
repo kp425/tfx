@@ -14,18 +14,16 @@
 """Tests for tfx.orchestration.experimental.core.task_queue."""
 
 import tensorflow as tf
+from tfx.orchestration.experimental.core import task as task_lib
 from tfx.orchestration.experimental.core import task_queue
-from tfx.orchestration.experimental.core.proto import task_pb2
+from tfx.orchestration.experimental.core import test_utils
 from tfx.orchestration.portable import test_utils as tu
 
 
 def _test_task(node_id, pipeline_id, pipeline_run_id=None):
-  task = task_pb2.Task()
-  task.exec_task.node_id = node_id
-  task.exec_task.pipeline_id = pipeline_id
-  if pipeline_run_id:
-    task.exec_task.pipeline_run_id = pipeline_run_id
-  return task
+  node_uid = task_lib.NodeUid(
+      pipeline_id=pipeline_id, pipeline_run_id=pipeline_run_id, node_id=node_id)
+  return test_utils.create_exec_node_task(node_uid)
 
 
 class TaskQueueTest(tu.TfxTest):
@@ -48,6 +46,7 @@ class TaskQueueTest(tu.TfxTest):
     self.assertEqual(t1, tq.dequeue())
     self.assertEqual(t2, tq.dequeue())
     self.assertIsNone(tq.dequeue())
+    self.assertIsNone(tq.dequeue(0.1))
 
     # Re-enqueueing the same tasks fails as `task_done` has not been called.
     self.assertFalse(tq.enqueue(t1))
@@ -76,7 +75,7 @@ class TaskQueueTest(tu.TfxTest):
     tq.task_done(t1)
 
     # Error since t2 is not in the queue.
-    with self.assertRaisesRegexp(RuntimeError, 'Task not tracked'):
+    with self.assertRaisesRegexp(RuntimeError, 'Task not present'):
       tq.task_done(t2)
 
 
