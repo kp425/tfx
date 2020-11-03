@@ -40,6 +40,7 @@
 *   Modules under `tfx.components.base` have been deprecated and moved to
     `tfx.dsl.components.base` in preparation for releasing a pipeline authoring
     package without explicit Tensorflow dependency.
+*   TrainerFnArgs is deprecated by FnArgs.
 
 ## Bug fixes and other changes
 
