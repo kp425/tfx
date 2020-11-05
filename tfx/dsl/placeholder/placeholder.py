@@ -169,15 +169,28 @@ class _ConcatOperator(_PlaceholderOperator):
         'ConcatOperator does not have the other expression to concat.')
 
 
-class _ProtoOperator(_PlaceholderOperator):
-  """Proto Operator concatenates multiple Placeholders.
+class ProtoSerializationScheme(enum.Enum):
+  TEXT_FORMAT = placeholder_pb2.ProtoOperator.TEXT_FORMAT
+  JSON = placeholder_pb2.ProtoOperator.JSON
 
-  Prefer to use . operator overloading of ExecPropertyPlaceholder.
+
+class _ProtoOperator(_PlaceholderOperator):
+  """Proto Operator helps access/serialze information in a proto-valued placeholder.
+
+  Prefer to use . operator overloading of ExecPropertyPlaceholder or
+  RuntimeInfoPlaceholder for proto field access, use serialize_proto function
+  for proto serialization.
   """
 
-  def __init__(self, proto_field_path: str):
+  def __init__(self,
+               proto_field_path: Optional[str] = None,
+               serialization_scheme: Optional[ProtoSerializationScheme] = None):
     super().__init__()
-    self._proto_field_path = [proto_field_path]
+    self._proto_field_path = [proto_field_path] if proto_field_path else None
+    self._serialization_scheme = serialization_scheme
+
+  def can_append_field_path(self):
+    return self._proto_field_path is not None
 
   def append_field_path(self, extra_path: str):
     self._proto_field_path.append(extra_path)
@@ -189,7 +202,11 @@ class _ProtoOperator(_PlaceholderOperator):
   ) -> placeholder_pb2.PlaceholderExpression:
     result = placeholder_pb2.PlaceholderExpression()
     result.operator.proto_op.expression.CopyFrom(sub_expression_pb)
-    result.operator.proto_op.proto_field_path.extend(self._proto_field_path)
+
+    if self._proto_field_path:
+      result.operator.proto_op.proto_field_path.extend(self._proto_field_path)
+    if self._serialization_scheme:
+      result.operator.proto_op.serialization_scheme = self._serialization_scheme.value
 
     # Attach proto descriptor if available through component spec.
     if (component_spec and sub_expression_pb.placeholder.type ==
@@ -273,18 +290,24 @@ class _ProtoAccessiblePlaceholder(Placeholder, abc.ABC):
 
   def __getattr__(self, field_name: str):
     proto_access_field = f'.{field_name}'
-    if self._operators and isinstance(self._operators[-1], _ProtoOperator):
+    if self._operators and isinstance(
+        self._operators[-1],
+        _ProtoOperator) and self._operators[-1].can_append_field_path():
       self._operators[-1].append_field_path(proto_access_field)
     else:
-      self._operators.append(_ProtoOperator(proto_access_field))
+      self._operators.append(
+          _ProtoOperator(proto_field_path=proto_access_field))
     return self
 
   def __getitem__(self, key: Union[int, str]):
     proto_access_field = f'[{key!r}]'
-    if self._operators and isinstance(self._operators[-1], _ProtoOperator):
+    if self._operators and isinstance(
+        self._operators[-1],
+        _ProtoOperator) and self._operators[-1].can_append_field_path():
       self._operators[-1].append_field_path(proto_access_field)
     else:
-      self._operators.append(_ProtoOperator(proto_access_field))
+      self._operators.append(
+          _ProtoOperator(proto_field_path=proto_access_field))
     return self
 
 
@@ -428,3 +451,18 @@ def runtime_info(key: str) -> RuntimeInfoPlaceholder:
   if key not in _RUNTIME_INFO_KEYS:
     raise ValueError(f'Got unsupported  key: {key}.')
   return RuntimeInfoPlaceholder(key)
+
+
+def serialize_proto(placeholder: Placeholder,
+                    scheme: ProtoSerializationScheme) -> Placeholder:
+  """Serialize the proto-valued placeholder using the provided scheme.
+
+  Args:
+    placeholder: The placeholder to be serialized. It must evaluate to a proto.
+    scheme: The scheme of how the proto is serialized.
+
+  Returns:
+    A placeholder that when rendered is serialized with the scheme.
+  """
+  placeholder._operators.append(_ProtoOperator(serialization_scheme=scheme))  # pylint: disable=protected-access
+  return placeholder

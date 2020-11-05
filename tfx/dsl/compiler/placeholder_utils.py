@@ -241,4 +241,16 @@ class _ExpressionResolver:
         raise ValueError(f"Got unsupported proto field path: {field}")
       if not isinstance(value, message.Message):
         return value
-    return text_format.MessageToString(value)
+      return text_format.MessageToString(value)
+
+    if op.serialization_scheme:
+      if op.serialization_scheme == placeholder_pb2.ProtoOperator.JSON:
+        return json_format.MessageToJson(
+            message=value, sort_keys=True, preserving_proto_field_name=True)
+      if op.serialization_scheme == placeholder_pb2.ProtoOperator.TEXT_FORMAT:
+        return text_format.MessageToString(value)
+
+    raise ValueError(
+        "Neither proto_field_path nor serialization_scheme "
+        "is provided in proto operator."
+    )

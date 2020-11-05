@@ -83,8 +83,8 @@ message IndexOperator {
   int64 index = 2;
 }
 
-// ProtoOperator helps access information in PlaceholderExpression if it
-// evaluates to a proto.
+// ProtoOperator helps access and serialize the information in
+// PlaceholderExpression if it evaluates to a proto.
 // ProtoOperator: Proto -> String
 message ProtoOperator {
   message ProtoSchema {
@@ -112,7 +112,17 @@ message ProtoOperator {
   // accessing p[0].a.b['c'], where p is the proto evaluated from the above
   // expression.
   repeated string proto_field_path = 3;
+
+  // Supported schemes to serialize a proto.
+  enum SerializationScheme {
+    TEXT_FORMAT = 0;
+    JSON = 1;
+  }
+
+  // Optional. The scheme that the proto is serialized to.
+  SerializationScheme serialization_scheme = 4;
 }
+
 
 // Placeholder is an inseparable unit in a placeholder expression that
 // pipeline information will be injected.
