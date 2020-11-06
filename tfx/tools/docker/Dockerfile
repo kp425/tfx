@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM gcr.io/tfx-oss-public/tfx_base:py37-20200729
+FROM gcr.io/tfx-oss-public/tfx_base:py37-20201106
 # Change to following base image if docker hub is preferred.
 # FROM tensorflow/tfx_base:latest
 
@@ -35,8 +35,8 @@ ADD . ${TFX_SRC_DIR}
 WORKDIR ${TFX_SRC_DIR}
 
 ARG TFX_DEPENDENCY_SELECTOR
+ENV TFX_DEPENDENCY_SELECTOR=${TFX_DEPENDENCY_SELECTOR}
 RUN if [ "${TFX_DEPENDENCY_SELECTOR}" = "NIGHTLY" ]; then \
-  TFX_DEPENDENCY_SELECTOR=${TFX_DEPENDENCY_SELECTOR} \
     CFLAGS=$(/usr/bin/python-config --cflags) \
     python -m pip install \
     --extra-index-url https://pypi-nightly.tensorflow.org/simple \

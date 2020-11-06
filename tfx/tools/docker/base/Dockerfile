@@ -30,6 +30,7 @@ RUN apt-get update -y && \
   apt-get install --no-install-recommends -y -q \
   build-essential \
   ca-certificates \
+  cmake \
   libsnappy-dev \
   protobuf-compiler \
   libprotobuf-dev \
